@@ -1,7 +1,12 @@
 # Vending Machine API Documentation
 
 ## Introduction
-This API provides endpoints for managing a vending machine. It allows users with different roles to perform various actions, such as adding, updating, or removing products, depositing coins, and making purchases.
+This API provides endpoints for managing a vending machine. It allows users with different roles to perform various actions, such as adding, updating his own products, or removing his own products, depositing coins, and making purchases.
+
+## Technologies Used
+
+- Java Spring Boot (version 3.2.2)
+- MySQL Database
 
 ## Documentation by Swagger
 - Base URL for accessing the API with Swagger: [Swagger UI](http://localhost:8080/swagger-ui/index.html#/)
@@ -9,8 +14,13 @@ This API provides endpoints for managing a vending machine. It allows users with
 ## Base URL
 - Base URL for accessing the API: [API Base URL](http://localhost:8080)
 
+## Test Users
+- to test the endpoints you could singin with these test users which are stored in deployed database.
+  - **seller**: username (test_sell) and password (seller1234).
+  - **buyer**: username (test_buy) and password (buyer1234).
+
 ## Authentication
-- Account must be registered with a role to be signed in and use the Bearer token for calling endpoints.
+- To register an account (buyer or seller) role must be chosen.
 - The API supports two roles:
   - **seller**: Users with the seller role can add, update, or remove products.
   - **buyer**: Users with the buyer role can deposit coins, make purchases, and reset their deposit.
@@ -58,4 +68,4 @@ All requests and responses are in JSON format.
 - **POST /api/v1/checkout/reset**: Reset the deposit amount to zero. (Authentication required)
 
 ## Notes
-- Database: Add the `datasource.url`, `username`, and `password` in `vending-machine\src\main\resources\application.properties`.
+- Database: is deployed into server, so you haven't to update the parameters of the database in application.properties.
