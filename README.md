@@ -8,16 +8,18 @@ This API provides endpoints for managing a vending machine. It allows users with
 - Java Spring Boot (version 3.2.2)
 - MySQL Database
 
-## Documentation by Swagger
-- Base URL for accessing the API with Swagger: [Swagger UI](http://localhost:8080/swagger-ui/index.html#/)
-
-## Base URL
-- Base URL for accessing the API: [API Base URL](http://localhost:8080)
+## Running Procedure
+- Clone the project.
+- Run MachineApplciation.java in vending-machine\src\main\java\com\vendor\machine\MachineApplication.java.
+- Test the API with Swagger: [Swagger UI](http://localhost:8080/swagger-ui/index.html#/)
 
 ## Test Users
 - to test the endpoints you could singin with these test users which are stored in deployed database.
   - **seller**: username (test_sell) and password (seller1234).
   - **buyer**: username (test_buy) and password (buyer1234).
+
+## Base URL
+- Base URL for accessing the API internally: [API Base URL](http://localhost:8080)
 
 ## Authentication
 - To register an account (buyer or seller) role must be chosen.
