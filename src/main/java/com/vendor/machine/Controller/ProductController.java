@@ -45,9 +45,20 @@ public class ProductController {
 
     @Operation(summary = "get all products")
     @GetMapping("")
-    public ResponseEntity<List<UpdateProductDTO>> getProducts() {
+    public ResponseEntity<?> getProducts() {
         List<UpdateProductDTO> products = productService.getallProducts();
-        return ResponseEntity.ok(products);
+        return new ResponseEntity<>(new ApiResponse<>(true,products,"Products Retreived Successfully"),HttpStatus.OK);
+    }
+
+    @Operation(summary = "get product by id")
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getProductDetails(@PathVariable("id") Long id) {
+        Product product = productRepository.findById(id).orElse(null);
+        if(product == null)
+        {
+            return new ResponseEntity<>(new ApiResponse<>(false,null,"Product Not found"),HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(new ApiResponse<>(true,product,"Product Retreived Successfully"),HttpStatus.OK);
     }
 
     @Operation(summary = "add product to list of products")

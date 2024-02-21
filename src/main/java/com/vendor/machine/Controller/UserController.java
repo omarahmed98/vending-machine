@@ -52,6 +52,24 @@ public class UserController {
             return new ResponseEntity<>(new ApiResponse<>(false,null,"Internal server error"),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @Operation(summary = "get user datails of logged in user")
+    @GetMapping("")
+    public ResponseEntity<?> getUser(HttpServletRequest request){
+        Principal principal = request.getUserPrincipal();
+        String username = principal.getName();
+        User user = userRepository.findByUsername(username).orElse(null);
+        if(user == null)
+        {
+            return new ResponseEntity<>(new ApiResponse<>(false,null,"No users found to delete"),HttpStatus.NOT_FOUND);
+        }
+        try {
+
+            return new ResponseEntity<>(new ApiResponse<>(true,user,"Successfully retreived the user"),HttpStatus.OK);
+        }
+        catch(Exception e) {
+            return new ResponseEntity<>(new ApiResponse<>(false,null,"Internal server error"),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @Operation(summary = "Update username and/or role of logged user")
     @PutMapping("")

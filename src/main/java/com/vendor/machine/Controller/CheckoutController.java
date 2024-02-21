@@ -5,7 +5,6 @@ import com.vendor.machine.Entity.User;
 import com.vendor.machine.Entity.Product;
 import com.vendor.machine.Repository.ProductRepository;
 import com.vendor.machine.Repository.UserRepository;
-import com.vendor.machine.Service.ProductService;
 import com.vendor.machine.Service.CheckoutService;
 
 import io.swagger.v3.oas.annotations.Operation;
