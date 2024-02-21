@@ -11,6 +11,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+
+import java.security.Principal;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,18 +30,16 @@ public class UserController {
     @PostMapping("/register")
     @Operation(summary = "register user")
     public ResponseEntity<?> registerUser(@RequestBody RegisterUserDTO userDto) {
-        // Check if username is already taken
         if (userService.existsByUsername(userDto.getUsername())) {
-            return ResponseEntity.badRequest().body("Username is already taken");
+            return new ResponseEntity<>(new ApiResponse<>(false,null,"Username is already taken"),HttpStatus.NOT_FOUND);
         }
         userService.register(userDto);
-        return ResponseEntity.ok("User registered successfully");
+        return new ResponseEntity<>(new ApiResponse<>(true,null,"User registered successfully"),HttpStatus.OK);
     }
 
     @PostMapping("/signin")
     @Operation(summary = "log in user")
     public ResponseEntity<?> signInUser(@RequestBody SignInDTO signInRequest) {
-        // Find user by username
         User user = userRepository.findByUsername(signInRequest.getUsername())
                 .orElse(null);
         try {
@@ -46,7 +47,7 @@ public class UserController {
             return new ResponseEntity<>(new ApiResponse<>(false,null,"No username found"),HttpStatus.NOT_FOUND);
             }
             String token = userService.login(signInRequest.getUsername(), signInRequest.getPassword());
-            return new ResponseEntity<>(new ApiResponse<>(true,token,"Success"),HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse<>(true,token,"Logged"),HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(new ApiResponse<>(false,null,"Internal server error"),HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -59,10 +60,10 @@ public class UserController {
             int response = userService.updateUser(request, updateUserDTO);
             if(response!=0)
             {
-                return new ResponseEntity<>(new ApiResponse<>(true, updateUserDTO.getUsername(),"Success"),HttpStatus.OK);
+                return new ResponseEntity<>(new ApiResponse<>(true, updateUserDTO.getUsername(),"User details updated successfully"),HttpStatus.OK);
             }
             else {
-                return new ResponseEntity<>(new ApiResponse<>(false,null,"No rows affected"),HttpStatus.NOT_MODIFIED);
+                return new ResponseEntity<>(new ApiResponse<>(false,null,"No rows affected"),HttpStatus.NOT_ACCEPTABLE);
             }
         }
         catch(Exception e) {
@@ -70,19 +71,21 @@ public class UserController {
         }
     }
 
-    @Operation(summary = "delete the user entry using id")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable("id") Long id){
-        User user = userRepository.findById(id).orElse(null);
+    @Operation(summary = "delete the logged in user")
+    @DeleteMapping("")
+    public ResponseEntity<?> deleteUser(HttpServletRequest request){
+        Principal principal = request.getUserPrincipal();
+        String username = principal.getName();
+        User user = userRepository.findByUsername(username).orElse(null);
+        if(user == null)
+        {
+            return new ResponseEntity<>(new ApiResponse<>(false,null,"No users found to delete"),HttpStatus.NOT_FOUND);
+        }
+        Long userId = user.getId();
         try {
-            if(user == null)
-                {
-                    return new ResponseEntity<>(new ApiResponse<>(false,null,"No users found to delete"),HttpStatus.NOT_FOUND);
-                }
-            else {
-                    userRepository.deleteById(id);
-                    return new ResponseEntity<>(new ApiResponse<>(true,null,"Successfully deleted the user"),HttpStatus.OK);
-                }
+
+            userRepository.deleteById(userId);
+            return new ResponseEntity<>(new ApiResponse<>(true,null,"Successfully deleted the user"),HttpStatus.OK);
         }
         catch(Exception e) {
             return new ResponseEntity<>(new ApiResponse<>(false,null,"Internal server error"),HttpStatus.INTERNAL_SERVER_ERROR);

@@ -21,7 +21,7 @@ public class SwaggerConfig implements WebMvcConfigurer {
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
-                .info(new Info().title("Product API").version("1.0.0"));
+                .info(new Info().title("Vending Machine API").version("1.0.0"));
     }
 
     @Override

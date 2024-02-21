@@ -76,6 +76,10 @@ public class ProductController {
             User user = userRepository.findByUsername(username).orElse(null);
             Long userId = user.getId();
             Product productSeller = productRepository.findById(product.getId()).orElse(null);
+            if(productSeller == null)
+            {
+                return new ResponseEntity<>(new ApiResponse<>(false,null,"Wrong Product Id"),HttpStatus.NOT_FOUND);
+            }
             Long sellerId = productSeller.getSellerId();
 
             if(userId.equals(sellerId))
@@ -86,11 +90,11 @@ public class ProductController {
                     return new ResponseEntity<>(new ApiResponse<>(true,product.getId(),"Product Updated Successfully"),HttpStatus.OK);
                 }
                 else {
-                    return new ResponseEntity<>(new ApiResponse<>(false,null,"No rows affected"),HttpStatus.NOT_MODIFIED);
+                    return new ResponseEntity<>(new ApiResponse<>(false,null,"No rows affected"),HttpStatus.NOT_ACCEPTABLE);
                 }
             }
             else {
-                return new ResponseEntity<>(new ApiResponse<>(false,null,"Not a product of logged user"),HttpStatus.NOT_MODIFIED);
+                return new ResponseEntity<>(new ApiResponse<>(false,null,"Not a product of logged user"),HttpStatus.NOT_ACCEPTABLE);
             }
     }
 
@@ -102,16 +106,18 @@ public class ProductController {
         User user = userRepository.findByUsername(username).orElse(null);
         Long userId = user.getId();
         Product productSeller = productRepository.findById(id).orElse(null);
+        if(productSeller == null)
+        {
+            return new ResponseEntity<>(new ApiResponse<>(false,null,"Wrong Product Id"),HttpStatus.NOT_FOUND);
+        }
         Long sellerId = productSeller.getSellerId();
-        if(userId.equals(sellerId))
+        boolean vaildUserProduct = userId.equals(sellerId);
+        if(!vaildUserProduct)
         {
-            productRepository.deleteById(id);
-            return new ResponseEntity<>(new ApiResponse<>(true,null,"Successfully deleted"),HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse<>(false,null,"Not a product of logged user"),HttpStatus.NOT_ACCEPTABLE);
         }
-        else 
-        {
-            return new ResponseEntity<>(new ApiResponse<>(false,null,"Not a product of logged user"),HttpStatus.NOT_MODIFIED);
-        }
+        productRepository.deleteById(id);
+        return new ResponseEntity<>(new ApiResponse<>(true,null,"Successfully deleted"),HttpStatus.OK);
 
     }
 }
